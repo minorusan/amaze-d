@@ -1,11 +1,36 @@
 ﻿using UnityEngine;
+using Core.Interactivity.Movement;
 
 
 namespace Core.Map
 {
 	public class BasicCell : MonoBehaviour
 	{
+		private Node _associatedNode;
+
+		public Node AssociatedNode {
+			get
+			{
+				return _associatedNode;
+			}
+			private set
+			{
+				_associatedNode = value;
+				value.OwnerPosition = transform.position;
+			}
+		}
+
 		public ECellType CellType;
+
+		public void InitWithNode (Node value)
+		{
+			if (AssociatedNode == null)
+			{
+				AssociatedNode = value;
+			}
+		}
+
+
 
 		private void OnDrawGizmos ()
 		{
