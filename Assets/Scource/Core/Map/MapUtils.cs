@@ -10,8 +10,9 @@ namespace Core.Map
 {
 	public enum ECellType
 	{
-		Walkable,
-		Blocked
+		Walkable = 0,
+		Blocked = 1,
+		Target
 	}
 
 	#if UNITY_EDITOR
@@ -26,6 +27,11 @@ namespace Core.Map
 			if (GUILayout.Button ("Generate map"))
 			{
 				mapGenerator.InstantiateCells ();
+			}
+
+			if (GUILayout.Button ("Generate obstacles"))
+			{
+				mapGenerator.GenerateObstacles ();
 			}
 		}
 	}

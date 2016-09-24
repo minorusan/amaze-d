@@ -15,89 +15,168 @@ namespace Core.Map
 		public int J;
 	}
 
-
-
-
-
 	public class MapGenerator : MonoBehaviour
 	{
 		#region PRIVATE
 
-		private List<GameObject> _currentCellsArray;
-		private List<BasicCell> _cellsInGame;
+		private List<Node> _currentCellsArray;
+		private Node[,] _currentNodeMatrix;
+		private List<Node> _cellsInGame;
 
 		#endregion
 
-		[Header ("Dimensions")]
+		public Node[,] CurrentMapAsMatrix {
+			get
+			{
+				return _currentNodeMatrix;
+			}
+		}
+
+		public List<Node> CurrentMap {
+			get
+			{
+				return _currentCellsArray;
+			}
+		}
+
+		[Header ("Map settings")]
+		public bool DrawDebug;
+
+		[Range (0, 100)]
+		public int RandomFillPercentage;
+		public int SmoothIterations;
 		public IJ MapDimentions;
 		public Vector2 CellSize;
 
 		public Transform StartPoint;
-		public GameObject CellPrefab;
 
-		
-		// Use this for initialization
-		void Start ()
+		#region Monobehaviour
+
+		void Awake ()
 		{
-			var t = GameObject.FindGameObjectsWithTag ("CELL");
-			_cellsInGame = new List<BasicCell> ();
-			for (int i = 0; i < t.Length; i++)
-			{
-				_cellsInGame.Add (t [i].GetComponent <BasicCell> ());
-			}
-
-			foreach (var item in _cellsInGame)
-			{
-				item.InitWithNode (new Node ());
-			}
+			_currentCellsArray = new List<Node> ();
+			InstantiateCells ();
 		}
 
-		// Update is called once per frame
-		void Update ()
+		private void OnDrawGizmos ()
 		{
+			if (_currentCellsArray == null || !DrawDebug)
+			{
+				return;
+			}
+
+			foreach (var item in _currentCellsArray)
+			{
+				var gizmoColor = Color.white;
+
+				switch (item.CurrentCellType)
+				{
+				case ECellType.Blocked:
+					{
+						gizmoColor = Color.red;
+						break;
+					}
+				case ECellType.Walkable:
+					{
+						gizmoColor = Color.green;
+						break;
+					}
+				case ECellType.Target:
+					{
+						gizmoColor = Color.yellow;
+						break;
+					}
+				default:
+					break;
+				}
+				Gizmos.color = gizmoColor;
+				Gizmos.DrawSphere (item.Position, 0.3f);
+			}
 
 		}
+
+
+		#endregion
+
+		#region MapGeneratorInit
 
 		public void InstantiateCells ()
 		{
+
 			if (_currentCellsArray == null)
 			{
-				_currentCellsArray = new List<GameObject> ();
+				_currentCellsArray = new List<Node> ();
 			}
 			else
 			{
-				foreach (var cell in _currentCellsArray)
-				{
-					DestroyImmediate (cell);
-				}
+				_currentCellsArray.Clear ();
 			}
 
-			var currentPosition = StartPoint.localPosition;
-			Debug.LogWarning ("MapGenerator::TEMP NODE CONFIGURATION! SEE LINE 76");
+			_currentNodeMatrix = new Node[MapDimentions.I, MapDimentions.J];
+
+			var currentPosition = StartPoint.position;
 			for (int i = 0; i < MapDimentions.I; i++)
 			{
-				
+
 				for (int j = 0; j < MapDimentions.J; j++)
 				{
-					var instantiated = Instantiate (CellPrefab);
-					instantiated.transform.SetParent (this.transform);
-					instantiated.transform.localPosition = currentPosition;
+					var instantiated = new Node ();
+
 					currentPosition = new Vector3 (currentPosition.x + CellSize.x, currentPosition.y, currentPosition.z);
+					instantiated.Position = currentPosition;
+					instantiated.GridPosition = new IJ (){ I = i, J = j };
 
-					instantiated.GetComponent <BasicCell> ().InitWithNode (new Node ());
-
-
+					_currentNodeMatrix [i, j] = instantiated;
 					_currentCellsArray.Add (instantiated);
 				}
 				currentPosition = new Vector3 (StartPoint.localPosition.x, currentPosition.y, currentPosition.z + CellSize.y);
 			}
-
-
 		}
 
-	
+		public void GenerateObstacles ()
+		{
+			ProceduralCaveGenerator.GenerateCaveFromNodes (ref _currentNodeMatrix, RandomFillPercentage, SmoothIterations);
+		}
 
-	
+		#endregion
+
+		#region MapGeneratorUtils
+
+		public List<Node> GetNeighbours (Node node)
+		{
+			List<Node> neighbours = new List<Node> ();
+
+			for (int x = -1; x <= 1; x++)
+			{
+				for (int y = -1; y <= 1; y++)
+				{
+					if (x == 0 && y == 0)
+						continue;
+
+					int checkX = node.GridPosition.I + y;
+					int checkY = node.GridPosition.J + x;
+
+					if (checkX >= 0 && checkX < MapDimentions.J && checkY >= 0 && checkY < MapDimentions.I)
+					{
+						neighbours.Add (_currentNodeMatrix [checkX, checkY]);
+					}
+				}
+			}
+
+			return neighbours;
+		}
+
+		public int GetDistance (Node nodeA, Node nodeB)
+		{
+			int dstX = Mathf.Abs (nodeA.GridPosition.J - nodeB.GridPosition.J);
+			int dstY = Mathf.Abs (nodeA.GridPosition.I - nodeB.GridPosition.I);
+
+			if (dstX > dstY)
+				return 14 * dstY + 10 * (dstX - dstY);
+			return 14 * dstX + 10 * (dstY - dstX);
+		}
+
+		#endregion
 	}
 
 }
