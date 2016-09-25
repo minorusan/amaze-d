@@ -11,7 +11,7 @@ namespace Core.Pathfinding
 			get;
 		}
 
-		Path FindPathToDestination (IJ currentNodeIndex, IJ targetNodeIndex, Node[,] map);
+		Path FindPathToDestination (IJ currentNodeIndex, IJ targetNodeIndex);
 	}
 
 	public enum EPathfindingAlgorithm

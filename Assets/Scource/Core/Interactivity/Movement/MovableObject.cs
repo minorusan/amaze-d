@@ -3,6 +3,8 @@
 using System.Linq;
 using System.Collections;
 using Gameplay;
+using Core.Map;
+using Core.Pathfinding;
 
 
 namespace Core.Interactivity.Movement
@@ -15,18 +17,44 @@ namespace Core.Interactivity.Movement
 		private EMovableObjectState _currentState = EMovableObjectState.Standing;
 		private Node _myPosition;
 
+		public bool RandomStart;
+		public Color DebugColor;
+
 		public Node MyPosition {
 			get
 			{
 				return _myPosition;
 			}
-			private set
+			set
 			{
-				_myPosition = value;
-				transform.position = value.Position;
+				if (value != null)
+				{
+					if (_myPosition != null)
+					{
+						_myPosition.CurrentCellType = ECellType.Walkable;
+					}
+
+					_myPosition = value;
+
+					value.CurrentCellType = ECellType.Busy;
+					transform.position = value.Position;
+				}
 			}
 		}
 
+		public bool ReachedDestination {
+			get
+			{
+				return _currentPath.Empty;
+			}
+		}
+
+		public Path CurrentPath {
+			get
+			{
+				return _currentPath;
+			}
+		}
 
 		public Animator SelfAnimator;
 
@@ -35,10 +63,14 @@ namespace Core.Interactivity.Movement
 		// Use this for initialization
 		void Start ()
 		{
-			if (_myPosition == null)
+			if (_myPosition == null && RandomStart)
 			{
-				MyPosition = Enumerable.FirstOrDefault (Game.Instance.CurrentMap.CurrentMap, c => c.CurrentCellType == Core.Map.ECellType.Walkable);
+				var passable = Enumerable.Where (Game.Instance.CurrentMap.CurrentMap, c => c.CurrentCellType == ECellType.Walkable).ToList ();
+				var target = passable [Random.Range (0, passable.Count () - 1)];
+				MyPosition = target;
 			}
+
+
 		}
 
 		public void BeginMovementByPath (Path path)
@@ -50,14 +82,32 @@ namespace Core.Interactivity.Movement
 
 	
 		// Update is called once per frame
-		void Update ()
+		protected void Update ()
 		{
+			SelfAnimator.SetFloat ("Speed", MovementSpeed * 120);
 			if (!_currentPath.Empty)
 			{
 				var rotation = Quaternion.LookRotation (_currentPath.Nodes [0].Position - transform.position);
 				transform.rotation = Quaternion.Slerp (transform.rotation, rotation, 0.1f);
 
-				MoveToTarget (_currentPath.Nodes [0].Position);
+				if (_currentPath.Nodes [0].CurrentCellType == ECellType.Busy)
+				{
+					BeginMovementByPath (Pathfinder.FindPathToDestination (MyPosition.GridPosition, _currentPath.Nodes.Last ().GridPosition));
+					if (!_currentPath.Empty)
+					{
+						MoveToTarget (_currentPath.Nodes [0].Position);
+					}
+					else
+					{
+						ToggleWalkAnimation (EMovableObjectState.Standing);
+					}
+				}
+				else
+				{
+					MoveToTarget (_currentPath.Nodes [0].Position);
+				}
+			
+
 
 				DrawDebugPath ();
 			}
@@ -73,7 +123,8 @@ namespace Core.Interactivity.Movement
 		{
 			if (_currentPath.Nodes [0].Position == this.transform.position)
 			{
-				_myPosition = _currentPath.Nodes [0];
+				MyPosition = _currentPath.Nodes [0];
+
 				_currentPath.Nodes.Remove (_currentPath.Nodes [0]);
 			}
 
@@ -92,13 +143,13 @@ namespace Core.Interactivity.Movement
 			}
 			var startDraw = new Vector3 (transform.position.x, transform.position.y + 1, transform.position.z);
 			var endFirst = new Vector3 (_currentPath.Nodes [0].Position.x, _currentPath.Nodes [0].Position.y + 1, _currentPath.Nodes [0].Position.z);
-			Debug.DrawLine (startDraw, endFirst);
+			Debug.DrawLine (startDraw, endFirst, DebugColor);
 			for (int i = 0; i < _currentPath.Nodes.Count - 1; i++)
 			{
 				var start = new Vector3 (_currentPath.Nodes [i].Position.x, _currentPath.Nodes [i].Position.y + 1, _currentPath.Nodes [i].Position.z);
 				var end = new Vector3 (_currentPath.Nodes [i + 1].Position.x, _currentPath.Nodes [i + 1].Position.y + 1, _currentPath.Nodes [i + 1].Position.z);
 
-				Debug.DrawLine (start, end);
+				Debug.DrawLine (start, end, DebugColor);
 			}
 		}
 

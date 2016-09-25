@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Core.Interactivity.Movement;
+using System.Linq;
 using Core.Map;
 using Gameplay;
 
@@ -9,6 +10,8 @@ namespace Core.Pathfinding.Algorithms
 {
 	public class AStar:IPathFinder
 	{
+		private List<ECellType> _ignoredNodeTypes;
+
 		#region IPathFinder implementation
 
 		public EPathfindingAlgorithm Algorithm {
@@ -18,8 +21,14 @@ namespace Core.Pathfinding.Algorithms
 			}
 		}
 
-		public Path FindPathToDestination (IJ currentNodeIndex, IJ targetNodeIndex, Node[,] map)
+		public AStar ()
 		{
+			_ignoredNodeTypes = new List<ECellType>{ ECellType.Blocked, ECellType.Busy };
+		}
+
+		public Path FindPathToDestination (IJ currentNodeIndex, IJ targetNodeIndex)
+		{
+			var map = Game.Instance.CurrentMap.CurrentMapAsMatrix;
 			Node startNode = map [currentNodeIndex.I, currentNodeIndex.J];
 			Node targetNode = map [targetNodeIndex.I, targetNodeIndex.J];
 
@@ -53,7 +62,8 @@ namespace Core.Pathfinding.Algorithms
 
 				foreach (Node neighbour in currentMap.GetNeighbours(node))
 				{
-					if (neighbour.CurrentCellType == ECellType.Blocked || closedSet.Contains (neighbour))
+					var ignored = _ignoredNodeTypes.Any (p => p == neighbour.CurrentCellType);
+					if (ignored || closedSet.Contains (neighbour))
 					{
 						continue;
 					}

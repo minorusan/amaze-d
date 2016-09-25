@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Core.Interactivity.Movement;
 using Core.Map;
 using Core.Pathfinding.Algorithms;
+using Gameplay;
 
 
 namespace Core.Pathfinding
@@ -20,12 +21,12 @@ namespace Core.Pathfinding
 		}
 
 
-		public static Path FindPathToDestination (IJ currentNodeIndex, IJ targetNodeIndex, Node[,] map,
+		public static Path FindPathToDestination (IJ currentNodeIndex, IJ targetNodeIndex,
 		                                          EPathfindingAlgorithm algorithm = EPathfindingAlgorithm.AStar)
 		{
 			var pathfinderToUse = _currentAlgorithms [algorithm];
-
-			return pathfinderToUse.FindPathToDestination (currentNodeIndex, targetNodeIndex, map);
+			Game.Instance.CurrentMap.CurrentMapAsMatrix [targetNodeIndex.I, targetNodeIndex.J].CurrentCellType = ECellType.Target;
+			return pathfinderToUse.FindPathToDestination (currentNodeIndex, targetNodeIndex);
 		}
 
 

@@ -13,20 +13,24 @@ namespace Utils.Testing
 {
 	public class KillCommand : MonoBehaviour
 	{
-		public MovableObject Dummy;
+		public MovableObject[] Dummis;
 
 		public int x, y;
 
 		public void GoRapeHim ()
 		{
-			var passable = Enumerable.Where (Game.Instance.CurrentMap.CurrentMap, c => c.CurrentCellType == ECellType.Walkable).ToList ();
-			var target = passable [Random.Range (0, passable.Count () - 1)];
-			Dummy.BeginMovementByPath (Pathfinder.FindPathToDestination (Dummy.MyPosition.GridPosition, new IJ {
-				I = target.GridPosition.I,
-				J = target.GridPosition.J
-			}, 
-			                                                             Game.Instance.CurrentMap.CurrentMapAsMatrix));
+			for (int i = 0; i < Dummis.Length; i++)
+			{
+				var passable = Enumerable.Where (Game.Instance.CurrentMap.CurrentMap, c => c.CurrentCellType == ECellType.Walkable).ToList ();
+				var target = passable [Random.Range (0, passable.Count () - 1)];
+				Dummis [i].BeginMovementByPath (Pathfinder.FindPathToDestination (Dummis [i].MyPosition.GridPosition, new IJ {
+					I = target.GridPosition.I,
+					J = target.GridPosition.J
+				}));
+			}
 		}
+
+			                                                            
 
 	}
 

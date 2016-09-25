@@ -12,7 +12,9 @@ namespace Core.Map
 	{
 		Walkable = 0,
 		Blocked = 1,
-		Target
+		Busy,
+		Target,
+		Player,
 	}
 
 	#if UNITY_EDITOR

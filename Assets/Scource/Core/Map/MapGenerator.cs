@@ -4,6 +4,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Core.Interactivity.Movement;
+using System.Linq;
+using System.Security.Policy;
 
 
 namespace Core.Map
@@ -39,8 +41,15 @@ namespace Core.Map
 			}
 		}
 
+		public GameObject Obstacle;
+		public GameObject Enemy;
+		public Transform EnemiesRoot;
+
 		[Header ("Map settings")]
 		public bool DrawDebug;
+
+		[Range (0, 100)]
+		public int EnemiesOccupation;
 
 		[Range (0, 100)]
 		public int RandomFillPercentage;
@@ -81,9 +90,14 @@ namespace Core.Map
 						gizmoColor = Color.green;
 						break;
 					}
-				case ECellType.Target:
+				case ECellType.Busy:
 					{
 						gizmoColor = Color.yellow;
+						break;
+					}
+				case ECellType.Player:
+					{
+						gizmoColor = Color.white;
 						break;
 					}
 				default:
@@ -131,16 +145,58 @@ namespace Core.Map
 				}
 				currentPosition = new Vector3 (StartPoint.localPosition.x, currentPosition.y, currentPosition.z + CellSize.y);
 			}
+
+			GenerateObstacles ();
+			GenerateEnemies ();
+		}
+
+		public void GenerateEnemies ()
+		{
+			foreach (var item in CurrentMap.Where (cel=>cel.CurrentCellType == ECellType.Walkable))
+			{
+				if (UnityEngine.Random.Range (0, 100) < EnemiesOccupation)
+				{
+					var z = Instantiate (Enemy);
+					z.GetComponent <MovableObject> ().MyPosition = item;
+					z.transform.SetParent (EnemiesRoot);
+					z.transform.position = item.Position;
+				}
+			}
 		}
 
 		public void GenerateObstacles ()
 		{
 			ProceduralCaveGenerator.GenerateCaveFromNodes (ref _currentNodeMatrix, RandomFillPercentage, SmoothIterations);
+			foreach (var item in CurrentMap.Where (c=>c.CurrentCellType == ECellType.Blocked))
+			{
+				var t = Instantiate (Obstacle);
+				t.transform.SetParent (transform);
+				t.transform.position = item.Position;
+			}
 		}
+
+
 
 		#endregion
 
 		#region MapGeneratorUtils
+
+		public Node GetNodeByPosition (Vector3 position)
+		{
+			float minDist = Mathf.Infinity;
+			Node toReturn = CurrentMap.FirstOrDefault (c => c.Position == position);
+			Vector3 currentPos = transform.position;
+			foreach (var node in CurrentMap)
+			{
+				float dist = Vector3.Distance (node.Position, position);
+				if (dist < minDist)
+				{
+					toReturn = node;
+					minDist = dist;
+				}
+			}
+			return toReturn;
+		}
 
 		public List<Node> GetNeighbours (Node node)
 		{
@@ -166,6 +222,11 @@ namespace Core.Map
 			return neighbours;
 		}
 
+		public List<Node> GetWalkableNeighbours (Node node)
+		{
+			return GetNeighbours (node).Where (n => n.CurrentCellType == ECellType.Walkable).ToList ();
+		}
+
 		public int GetDistance (Node nodeA, Node nodeB)
 		{
 			int dstX = Mathf.Abs (nodeA.GridPosition.J - nodeB.GridPosition.J);
@@ -175,6 +236,15 @@ namespace Core.Map
 				return 14 * dstY + 10 * (dstX - dstY);
 			return 14 * dstX + 10 * (dstY - dstX);
 		}
+
+		public int GetManhattanDistance (Node nodeA, Node nodeB)
+		{
+			int dstX = Mathf.Abs (nodeA.GridPosition.J - nodeB.GridPosition.J);
+			int dstY = Mathf.Abs (nodeA.GridPosition.I - nodeB.GridPosition.I);
+			return dstX + dstY;
+			
+		}
+
 
 		#endregion
 	}
