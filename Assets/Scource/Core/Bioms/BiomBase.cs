@@ -9,181 +9,99 @@ using System.Collections.Generic;
 
 namespace Core.Bioms
 {
-	public class BiomBase : MonoBehaviour
-	{
-		#region PROTECTED
+    public class BiomBase : MonoBehaviour
+    {
+        #region PRIVATE
 
-		protected MeshFilter _selfMeshFiler;
-		protected float _selfMapLength;
-		protected float[,] _currentMap;
-
-		#endregion
-
-		#region PRIVATE
-
-		private float _timeToGrow;
-		private BiomSpawn[] _biomSpawns;
-		private Vector3[] _requiredVertices;
-		private Vector3[] _currentVertices;
-		private int _whenToGrowSubDivision = 24;
-		private int iterations;
-		private MeshCollider _selfCollider;
-		private Vector3 _newScale;
-
-		#endregion
-
-		[Header ("Basic biome settings")]
-		public float ScaleCoeficient;
-		public float Padding = 3.5f;
-
-		public float GrowthTime = 3;
-		public float GrowthSpeed = 3;
-
-		[Header ("Biome-specific")]
-		public string BiomSpawnsTag;
+        private float _timeToGrow;
+        protected BiomShaper _shaper;
 
 
+        #endregion
 
-		public int Iterations {
-			get
-			{
-				return iterations;
-			}
-		}
+        [Header("Basic biome settings")]
+        public float ScaleCoeficient;
+        public float Padding = 3.5f;
+        public GameObject Plane;
+        public Collider SpawnArea;
 
-		#region MONOBEHAVIOUR
 
-		protected virtual void Awake ()
-		{
-			GetSpawns ();
-		}
+        public float GrowthTime = 3;
+        public float GrowthSpeed = 3;
 
-		protected virtual void Start ()
-		{
-			
-			_selfMeshFiler = GetComponent<MeshFilter> (); 
+        [Header("Biome-specific")]
+        public string BiomSpawnsTag;
+        public float[,] CurrentMap;
 
-			_selfCollider = GetComponent <MeshCollider> ();
-			_selfMapLength = Mathf.Sqrt (_selfMeshFiler.mesh.vertices.Length);
-			_timeToGrow = GrowthTime;
-			GenerateTerrain ();
 
-		}
+        public int BiomPower
+        {
+            get;
+            set;
+        }
 
-		protected virtual void Update ()
-		{
-			DefineGrowthProgress ();
-			CheckSpawns ();
-		}
+        public BiomShaper Shaper
+        {
+            get
+            {
+                return _shaper;
+            }
+        }
 
-		#endregion
+        public void AddBiomPower(int powerToAdd)
+        {
+            BiomPower += powerToAdd;
+        }
 
-		protected virtual void GenerateTerrain ()
-		{
-			ApplyNewHeightMap ();
-			_newScale = new Vector3 (transform.localScale.x + ScaleCoeficient,
-			                         1f,
-			                         transform.localScale.z + ScaleCoeficient);
-			_timeToGrow = GrowthTime;
-		}
+        #region MONOBEHAVIOUR
 
-		private void ApplyNewHeightMap ()
-		{
-			Vector3[] vertices = _selfMeshFiler.mesh.vertices;
-			_currentVertices = vertices;
-	
-			_requiredVertices = new Vector3[vertices.Length];
-			vertices.CopyTo (_requiredVertices, 0);
-			var iterator = 0;
-			for (int i = 0; i < _selfMapLength; i++)
-			{
-				for (int j = 0; j < _selfMapLength; j++)
-				{
-					if ((vertices [iterator].x < Padding && vertices [iterator].x > -Padding) &&
-					    (vertices [iterator].z < Padding && vertices [iterator].z > -Padding))
-					{
-						_requiredVertices [iterator].y = _currentMap [i, j];
-					}
-					iterator++;
-				}
-			}
-		}
+        protected virtual void Awake()
+        {
+            InitShaper();
+        }
 
-		private void ApplyHeightsAsync ()
-		{
-			for (int i = 0; i < _requiredVertices.Length; i++)
-			{
-				_currentVertices [i] = Vector3.MoveTowards (_currentVertices [i], _requiredVertices [i], Time.deltaTime);
-			}
-			if (_currentVertices.Length == _selfMeshFiler.mesh.vertices.Length)
-			{
-				_selfMeshFiler.mesh.vertices = _currentVertices;
-				_selfMeshFiler.mesh.RecalculateBounds (); 
-				_selfMeshFiler.mesh.RecalculateNormals (); 
-				_selfCollider.sharedMesh = _selfMeshFiler.mesh;
-			}
-		}
+        protected virtual void Start()
+        {
+            _timeToGrow = GrowthTime;
+            PerformTerrainGeneration();
+        }
 
-		private void GetSpawns ()
-		{
-			if (!string.IsNullOrEmpty (BiomSpawnsTag))
-			{
-				var spawnsGOs = GameObject.FindGameObjectsWithTag (BiomSpawnsTag);
-				_biomSpawns = new BiomSpawn[spawnsGOs.Length];
+        protected virtual void Update()
+        {
+            DefineGrowthProgress();
+        }
 
-				for (int i = 0; i < _biomSpawns.Length; i++)
-				{
-					_biomSpawns [i] = spawnsGOs [i].GetComponent <BiomSpawn> ();
-					_biomSpawns [i].gameObject.SetActive (false);
-				}
-			}
+        protected virtual void PerformTerrainGeneration()
+        {
+            BiomPower++;
+        }
 
-		}
+        #endregion
 
-		private void DefineGrowthProgress ()
-		{
-			if (_timeToGrow < 0)
-			{
-				GenerateTerrain ();
-				iterations++;
-				if (iterations % _whenToGrowSubDivision == 0)
-				{
-					MeshHelper.Subdivide4 (_selfMeshFiler.mesh);
-					_whenToGrowSubDivision *= 5;
-					Debug.Log ("Biom::Subdivided!");
-				}
-			}
-			else
-			{
-				_timeToGrow -= Time.deltaTime;
-				transform.localScale = Vector3.MoveTowards (transform.localScale,
-				                                            _newScale,
-				                                            Time.deltaTime * GrowthSpeed);
-				if (iterations >= 1)
-				{
-					ApplyHeightsAsync ();
-				}
-			}
-		}
+        private void InitShaper()
+        {
+            var shaperData = new BiomShaperData();
+            shaperData.GrowthSpeed = GrowthSpeed;
+            shaperData.Owner = this;
+            shaperData.Padding = Padding;
+            shaperData.Plane = Plane;
 
-		private void CheckSpawns ()
-		{
-			if (_biomSpawns != null && _biomSpawns.Length > 0)
-			{
-				for (int i = 0; i < _biomSpawns.Length; i++)
-				{
-					if (_biomSpawns [i].StartIteration <= Iterations && _biomSpawns [i].EndIteration >= Iterations)
-					{
-						_biomSpawns [i].gameObject.SetActive (true);
-					}
+            _shaper = new BiomShaper(shaperData);
+        }
 
-					if (_biomSpawns [i].EndIteration <= Iterations && _biomSpawns [i].isActiveAndEnabled)
-					{
-						_biomSpawns [i].DeactivateSpawn ();
-					}
-				}
-			}
-
-		}
-	}
+        private void DefineGrowthProgress()
+        {
+            if (_timeToGrow < 0)
+            {
+                
+                PerformTerrainGeneration();
+                _timeToGrow = GrowthTime;
+            }
+            else
+            {
+                _timeToGrow -= Time.deltaTime;
+                _shaper.UpdateShape();
+            }
+        }
+    }
 }
