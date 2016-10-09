@@ -1,107 +1,109 @@
 ﻿using UnityEngine;
-using System.Collections;
-using Core.Map.TerrainGeneration;
-using Core.Map;
-using System.Security.Cryptography;
-using System.Security.Policy;
-using System.Collections.Generic;
+
 
 
 namespace Core.Bioms
 {
-    public class BiomBase : MonoBehaviour
-    {
-        #region PRIVATE
+	public class BiomBase : MonoBehaviour
+	{
+		#region PRIVATE
 
-        private float _timeToGrow;
-        protected BiomShaper _shaper;
-
-
-        #endregion
-
-        [Header("Basic biome settings")]
-        public float ScaleCoeficient;
-        public float Padding = 3.5f;
-        public GameObject Plane;
-        public Collider SpawnArea;
+		private float _timeToGrow;
+		protected BiomShaper _shaper;
+		private int _power = 1;
+		public Material _material;
 
 
-        public float GrowthTime = 3;
-        public float GrowthSpeed = 3;
+		#endregion
 
-        [Header("Biome-specific")]
-        public string BiomSpawnsTag;
-        public float[,] CurrentMap;
+		[Header ("Basic biome settings")]
+		public float ScaleCoeficient;
+		public float Padding = 3.5f;
+		public GameObject Plane;
+		public Collider SpawnArea;
 
 
-        public int BiomPower
-        {
-            get;
-            set;
-        }
+		public float GrowthTime = 3;
+		public float GrowthSpeed = 3;
 
-        public BiomShaper Shaper
-        {
-            get
-            {
-                return _shaper;
-            }
-        }
+		[Header ("Biome-specific")]
+		public string BiomSpawnsTag;
+		public bool UsePerlinNoise;
+		public float[,] CurrentMap;
 
-        public void AddBiomPower(int powerToAdd)
-        {
-            BiomPower += powerToAdd;
-        }
 
-        #region MONOBEHAVIOUR
+		public int BiomPower {
+			get
+			{
+				return _power;
+			}
+			set
+			{
+				_power = value;
+				PerformTerrainGeneration ();
+			}
+		}
 
-        protected virtual void Awake()
-        {
-            InitShaper();
-        }
+		public BiomShaper Shaper {
+			get
+			{
+				return _shaper;
+			}
+		}
 
-        protected virtual void Start()
-        {
-            _timeToGrow = GrowthTime;
-            PerformTerrainGeneration();
-        }
 
-        protected virtual void Update()
-        {
-            DefineGrowthProgress();
-        }
 
-        protected virtual void PerformTerrainGeneration()
-        {
-            BiomPower++;
-        }
+		#region MONOBEHAVIOUR
 
-        #endregion
+		protected virtual void Awake ()
+		{
+			
 
-        private void InitShaper()
-        {
-            var shaperData = new BiomShaperData();
-            shaperData.GrowthSpeed = GrowthSpeed;
-            shaperData.Owner = this;
-            shaperData.Padding = Padding;
-            shaperData.Plane = Plane;
+			_timeToGrow = GrowthTime;
+		}
 
-            _shaper = new BiomShaper(shaperData);
-        }
+		protected virtual void Start ()
+		{
+			InitShaper ();
 
-        private void DefineGrowthProgress()
-        {
-            if (_timeToGrow < 0)
-            {
-                
-                PerformTerrainGeneration();
-                _timeToGrow = GrowthTime;
-            }
-            else
-            {
-                _timeToGrow -= Time.deltaTime;
-                _shaper.UpdateShape();
-            }
-        }
-    }
+		}
+
+		protected virtual void Update ()
+		{
+			DefineGrowthProgress ();
+		}
+
+		protected virtual void PerformTerrainGeneration ()
+		{
+		}
+
+		#endregion
+
+		private void InitShaper ()
+		{
+			var shaperData = new BiomShaperData ();
+			shaperData.GrowthSpeed = GrowthSpeed;
+			shaperData.Owner = this;
+			shaperData.Padding = Padding;
+			shaperData.Plane = Plane;
+
+			_shaper = new BiomShaper (shaperData);
+		}
+
+
+
+		private void DefineGrowthProgress ()
+		{
+			if (_timeToGrow < 0)
+			{
+				BiomPower++;
+				_timeToGrow = GrowthTime;
+			}
+			else
+			{
+				_timeToGrow -= Time.deltaTime;
+				_shaper.UpdateShape ();
+			}
+		}
+	}
 }

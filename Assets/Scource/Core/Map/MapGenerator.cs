@@ -146,8 +146,8 @@ namespace Core.Map
 				currentPosition = new Vector3 (StartPoint.localPosition.x, currentPosition.y, currentPosition.z + CellSize.y);
 			}
 
-			GenerateObstacles ();
-			GenerateEnemies ();
+			//GenerateObstacles ();
+			//GenerateEnemies ();
 		}
 
 		public void GenerateEnemies ()
@@ -169,9 +169,9 @@ namespace Core.Map
 			ProceduralCaveGenerator.GenerateCaveFromNodes (ref _currentNodeMatrix, RandomFillPercentage, SmoothIterations);
 			foreach (var item in CurrentMap.Where (c=>c.CurrentCellType == ECellType.Blocked))
 			{
-				var t = Instantiate (Obstacle);
-				t.transform.SetParent (transform);
-				t.transform.position = item.Position;
+				//var t = Instantiate (Obstacle);
+				//t.transform.SetParent (transform);
+				//t.transform.position = item.Position;
 			}
 		}
 
