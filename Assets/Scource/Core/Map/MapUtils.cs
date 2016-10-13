@@ -8,37 +8,46 @@ using UnityEditor;
 
 namespace Core.Map
 {
-	public enum ECellType
-	{
-		Walkable = 0,
-		Blocked = 1,
-		Busy,
-		Target,
-		Player,
-	}
+    public class MapHelpers
+    {
+        public static float GetHeightWorldCoords(TerrainData terrainData, Vector2 point)
+        {
+            Vector3 scale = terrainData.heightmapScale;
+            return (float)terrainData.GetHeight((int)(point.x / scale.x), (int)(point.y / scale.z));
+        }
+    }
 
-	#if UNITY_EDITOR
-	[CustomEditor (typeof(MapGenerator))]
-	public class MapGeneratorEditor : Editor
-	{
-		public override void OnInspectorGUI ()
-		{
-			DrawDefaultInspector ();
+    public enum ECellType
+    {
+        Walkable = 0,
+        Blocked = 1,
+        Busy,
+        Target,
+        Player,
+    }
 
-			var mapGenerator = (MapGenerator)target;
-			if (GUILayout.Button ("Generate map"))
-			{
-				mapGenerator.InstantiateCells ();
-			}
+    #if UNITY_EDITOR
+    [CustomEditor(typeof(MapGenerator))]
+    public class MapGeneratorEditor : Editor
+    {
+        public override void OnInspectorGUI()
+        {
+            DrawDefaultInspector();
 
-			if (GUILayout.Button ("Generate obstacles"))
-			{
-				mapGenerator.GenerateObstacles ();
-			}
-		}
-	}
+            var mapGenerator = (MapGenerator)target;
+            if (GUILayout.Button("Generate map"))
+            {
+                mapGenerator.InstantiateCells();
+            }
+
+            if (GUILayout.Button("Generate obstacles"))
+            {
+                mapGenerator.GenerateObstacles();
+            }
+        }
+    }
 
 
-	#endif
+    #endif
 }
 

@@ -71,7 +71,8 @@ namespace Core.Interactivity.AI.AIStates
         {
             if (_masterBrain.MovableObject.ReachedDestination || IsDestinationCellBusy())
             {
-                var notOnNeighbourPlayerCell = Game.Instance.CurrentMap.GetNeighbours(_player.MyPosition).All(p => p != _masterBrain.MovableObject.MyPosition);
+                var notOnNeighbourPlayerCell = Game.Instance.CurrentMap.GetNeighbours(_player.MyPosition, Vector2.one).All(p => p != _masterBrain.MovableObject.MyPosition
+                                               );
 
                 if (notOnNeighbourPlayerCell)
                 {

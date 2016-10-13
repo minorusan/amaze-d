@@ -6,6 +6,7 @@ namespace Core.Bioms
 {
     public enum EBiomType
     {
+        None,
         Fel
     }
 
