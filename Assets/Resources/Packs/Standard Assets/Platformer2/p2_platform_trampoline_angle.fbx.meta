@@ -3,8 +3,20 @@ guid: 91039a5f0eda0dd4fa93b403f54350e2
 ModelImporter:
   serializedVersion: 19
   fileIDToRecycleName:
+    100000: bridge
+    100002: //RootNode
+    100004: shackroof
+    400000: bridge
+    400002: //RootNode
+    400004: shackroof
+    2300000: bridge
+    2300002: shackroof
+    3300000: bridge
+    3300002: shackroof
     4300000: shackroof
     4300002: bridge
+    7400000: modo_Anim
+    11100000: //RootNode
   materials:
     importMaterials: 1
     materialName: 0

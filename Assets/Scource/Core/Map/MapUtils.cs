@@ -46,8 +46,6 @@ namespace Core.Map
             }
         }
     }
-
-
     #endif
 }
 

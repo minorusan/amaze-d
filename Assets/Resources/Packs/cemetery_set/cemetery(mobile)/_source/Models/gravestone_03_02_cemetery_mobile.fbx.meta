@@ -3,7 +3,12 @@ guid: f4232a8a820e7d34f8c6b29679512cad
 ModelImporter:
   serializedVersion: 19
   fileIDToRecycleName:
+    100000: //RootNode
+    400000: //RootNode
+    2300000: //RootNode
+    3300000: //RootNode
     4300000: gravestone_03_02_mobile
+    11100000: //RootNode
   materials:
     importMaterials: 1
     materialName: 1

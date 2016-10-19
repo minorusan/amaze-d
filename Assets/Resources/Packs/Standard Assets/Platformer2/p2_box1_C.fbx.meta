@@ -3,8 +3,20 @@ guid: 0b8c0d73a1b160e4186a533203a6ff33
 ModelImporter:
   serializedVersion: 19
   fileIDToRecycleName:
+    100000: //RootNode
+    100002: polymsh42
+    100004: polymsh43
+    400000: //RootNode
+    400002: polymsh42
+    400004: polymsh43
+    2300000: polymsh42
+    2300002: polymsh43
+    3300000: polymsh42
+    3300002: polymsh43
     4300000: polymsh42
     4300002: polymsh43
+    7400000: modo_Anim
+    11100000: //RootNode
   materials:
     importMaterials: 1
     materialName: 0

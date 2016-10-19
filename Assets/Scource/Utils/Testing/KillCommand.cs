@@ -11,27 +11,27 @@ using Gameplay;
 
 namespace Utils.Testing
 {
-	public class KillCommand : MonoBehaviour
-	{
-		public MovableObject[] Dummis;
+    public class KillCommand : MonoBehaviour
+    {
+        public MovableObject[] Dummis;
 
-		public int x, y;
+        public int x, y;
 
-		public void GoRapeHim ()
-		{
-			for (int i = 0; i < Dummis.Length; i++)
-			{
-				var passable = Enumerable.Where (Game.Instance.CurrentMap.CurrentMap, c => c.CurrentCellType == ECellType.Walkable).ToList ();
-				var target = passable [Random.Range (0, passable.Count () - 1)];
-				Dummis [i].BeginMovementByPath (Pathfinder.FindPathToDestination (Dummis [i].MyPosition.GridPosition, new IJ {
-					I = target.GridPosition.I,
-					J = target.GridPosition.J
-				}));
-			}
-		}
+        public void GoRapeHim()
+        {
+            for (int i = 0; i < Dummis.Length; i++)
+            {
+                var passable = Enumerable.Where(Game.Instance.CurrentMap.CurrentMap, c => c.CurrentCellType == ECellType.Walkable).ToList();
+                var target = passable[Random.Range(0, passable.Count() - 1)];
+                Dummis[i].BeginMovementByPath(Pathfinder.FindPathToDestination(Dummis[i].MyPosition.GridPosition, new IJ(
+                            target.GridPosition.I,
+                            target.GridPosition.J
+                        )));
+            }
+        }
 
 			                                                            
 
-	}
+    }
 
 }

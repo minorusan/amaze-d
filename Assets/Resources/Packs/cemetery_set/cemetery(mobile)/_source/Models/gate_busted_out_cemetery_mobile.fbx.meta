@@ -3,11 +3,39 @@ guid: fbfc5a30f23874b4187dc22f7b4d38be
 ModelImporter:
   serializedVersion: 19
   fileIDToRecycleName:
+    100000: //RootNode
+    100002: gate_left_mobile
+    100004: gate_right_mobile
+    100006: metal_mobile
+    100008: metal_mobile 1
+    100010: transp_mobile
+    100012: transp_mobile 1
+    400000: //RootNode
+    400002: gate_left_mobile
+    400004: gate_right_mobile
+    400006: metal_mobile
+    400008: metal_mobile 1
+    400010: transp_mobile
+    400012: transp_mobile 1
+    2300000: //RootNode
+    2300002: metal_mobile
+    2300004: metal_mobile 1
+    2300006: transp_mobile
+    2300008: transp_mobile 1
+    3300000: //RootNode
+    3300002: metal_mobile
+    3300004: metal_mobile 1
+    3300006: transp_mobile
+    3300008: transp_mobile 1
     4300000: gate_busted_out_mobile
     4300002: metal_mobile
     4300004: transp_mobile
     4300006: transp_mobile
     4300008: metal_mobile
+    7400000: idle
+    7400002: open_fast
+    7400004: sway_in_wind
+    11100000: //RootNode
   materials:
     importMaterials: 1
     materialName: 1

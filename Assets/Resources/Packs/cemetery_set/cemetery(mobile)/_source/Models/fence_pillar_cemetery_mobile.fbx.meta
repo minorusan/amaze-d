@@ -3,7 +3,12 @@ guid: 52c5f53e9fc60a1458bd407c860d5290
 ModelImporter:
   serializedVersion: 19
   fileIDToRecycleName:
+    100000: //RootNode
+    400000: //RootNode
+    2300000: //RootNode
+    3300000: //RootNode
     4300000: fence_cemetery_pillar_mobile
+    11100000: //RootNode
   materials:
     importMaterials: 1
     materialName: 1

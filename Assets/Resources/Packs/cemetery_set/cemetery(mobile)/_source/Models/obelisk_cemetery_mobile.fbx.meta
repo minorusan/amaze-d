@@ -3,7 +3,12 @@ guid: 935e8b5b6f397fc45971a8e2f04e5cc6
 ModelImporter:
   serializedVersion: 19
   fileIDToRecycleName:
+    100000: //RootNode
+    400000: //RootNode
+    2300000: //RootNode
+    3300000: //RootNode
     4300000: obelisk_mobile
+    11100000: //RootNode
   materials:
     importMaterials: 1
     materialName: 1

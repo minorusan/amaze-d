@@ -3,9 +3,30 @@ guid: d22056fe164c85040b0087469bd40f22
 ModelImporter:
   serializedVersion: 19
   fileIDToRecycleName:
+    100000: body
+    100002: //RootNode
+    100004: Coffin_Whole_Lid
+    100006: Coffin_Whole_Lid_Grp
+    100008: webs
+    400000: body
+    400002: //RootNode
+    400004: Coffin_Whole_Lid
+    400006: Coffin_Whole_Lid_Grp
+    400008: webs
+    2300000: body
+    2300002: Coffin_Whole_Lid
+    2300004: webs
+    3300000: body
+    3300002: Coffin_Whole_Lid
+    3300004: webs
     4300000: Coffin_Whole_Lid
     4300002: webs
     4300004: body
+    7400000: idle
+    7400002: open
+    7400004: close
+    7400006: shudder
+    11100000: //RootNode
   materials:
     importMaterials: 1
     materialName: 1

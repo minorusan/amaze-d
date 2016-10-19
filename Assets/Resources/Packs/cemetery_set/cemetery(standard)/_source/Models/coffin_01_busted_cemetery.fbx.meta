@@ -3,8 +3,17 @@ guid: 187c79850effa2c4d816ebf8a7d52afd
 ModelImporter:
   serializedVersion: 19
   fileIDToRecycleName:
+    100000: //RootNode
+    100002: Coffin_Broken_Web
+    400000: //RootNode
+    400002: Coffin_Broken_Web
+    2300000: //RootNode
+    2300002: Coffin_Broken_Web
+    3300000: //RootNode
+    3300002: Coffin_Broken_Web
     4300000: Coffin_Broken
     4300002: Coffin_Broken_Web
+    11100000: //RootNode
   materials:
     importMaterials: 1
     materialName: 1

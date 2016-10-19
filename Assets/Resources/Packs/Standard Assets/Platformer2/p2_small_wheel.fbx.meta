@@ -3,11 +3,35 @@ guid: a032bd4f20929a9479cb8cb863a1e968
 ModelImporter:
   serializedVersion: 19
   fileIDToRecycleName:
+    100000: body
+    100002: //RootNode
+    100004: wheel1
+    100006: wheel2
+    100008: wheel3
+    100010: 'wheel3 '
+    400000: body
+    400002: //RootNode
+    400004: wheel1
+    400006: wheel2
+    400008: wheel3
+    400010: 'wheel3 '
+    2300000: body
+    2300002: wheel1
+    2300004: wheel2
+    2300006: wheel3
+    2300008: 'wheel3 '
+    3300000: body
+    3300002: wheel1
+    3300004: wheel2
+    3300006: wheel3
+    3300008: 'wheel3 '
     4300000: wheel1
     4300002: wheel2
     4300004: wheel3
     4300006: 'wheel3 '
     4300008: body
+    7400000: modo_Anim
+    11100000: //RootNode
   materials:
     importMaterials: 1
     materialName: 0
