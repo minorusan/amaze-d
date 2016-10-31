@@ -7,6 +7,7 @@ namespace Gameplay
 	{
 		public static string kMapTag = "MAP";
 		public static string kPlayerTag = "Player";
+		public static string kFelBiomTag = "FEL";
 	}
 }
 

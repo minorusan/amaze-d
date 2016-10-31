@@ -2,6 +2,7 @@
 using System.Collections;
 using Utils;
 using Core.Map;
+using Core.Gameplay;
 
 
 namespace Gameplay
@@ -9,6 +10,13 @@ namespace Gameplay
 	public class Game : MonoSingleton<Game>
 	{
 		private Session _currentSession;
+
+		public ReferenceStorage ReferenceStorage {
+			get
+			{
+				return _currentSession.References;
+			}
+		}
 
 		public Session CurrentSession {
 			get

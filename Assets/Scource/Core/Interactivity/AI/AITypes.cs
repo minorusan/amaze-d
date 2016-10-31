@@ -8,7 +8,10 @@ namespace Core.Interactivity.AI
 		Empty,
 		Wandering,
 		Alert,
-		Attack
+		Attack,
+		PickCrate,
+		CratePicked,
+		DetectSlave
 	}
 		
 }

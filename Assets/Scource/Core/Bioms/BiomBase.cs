@@ -34,6 +34,7 @@ namespace Core.Bioms
 		public bool UsePerlinNoise;
 		public float[,] CurrentMap;
 
+		public EBiomType BiomType;
 
 		public int BiomPower {
 			get

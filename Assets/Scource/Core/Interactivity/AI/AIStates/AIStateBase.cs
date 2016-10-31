@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Diagnostics;
 
 
@@ -47,6 +48,11 @@ namespace Core.Interactivity.AI.AIStates
 				Debug.Assert (_pendingState != EAIState.Empty, "BRAINS::ERROR");
 				_masterBrain.MoveToState (_pendingState);
 			}
+		}
+
+		protected bool IsDestinationCellBusy ()
+		{
+			return _masterBrain.MovableObject.CurrentPath.Nodes.Last ().CurrentCellType == Core.Map.ECellType.Busy;
 		}
 	}
 }

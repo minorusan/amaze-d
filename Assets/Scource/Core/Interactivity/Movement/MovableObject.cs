@@ -23,7 +23,7 @@ namespace Core.Interactivity.Movement
 		public Node MyPosition {
 			get
 			{
-				return _myPosition;
+				return Game.Instance.CurrentMap.GetNodeByPosition (transform.position);
 			}
 			set
 			{
@@ -121,7 +121,7 @@ namespace Core.Interactivity.Movement
 
 		private void CheckIfDestinationIsReached ()
 		{
-			if (_currentPath.Nodes [0].Position == this.transform.position)
+			if (Vector3.Distance (_currentPath.Nodes [0].Position, this.transform.position) < 0.1f)//(_currentPath.Nodes [0].Position == this.transform.position)
 			{
 				MyPosition = _currentPath.Nodes [0];
 

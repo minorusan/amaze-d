@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using Core.Bioms;
+using System;
 
 
 namespace Core.Interactivity
@@ -11,9 +12,19 @@ namespace Core.Interactivity
 		Picked
 	}
 
+
 	public class BasicBonus : MonoBehaviour
 	{
 		private EBonusState _currentState;
+
+		public static event Action CrateBeingPicked;
+
+		public EBonusState CurrentState {
+			get
+			{
+				return _currentState;
+			}
+		}
 		// Use this for initialization
 		void Start ()
 		{
@@ -32,9 +43,14 @@ namespace Core.Interactivity
 			{
 			case EBonusState.Idle:
 				{
-					transform.SetParent (col.gameObject.transform);
-					transform.localPosition = new Vector3 (0, 2f, 0);
-					_currentState = EBonusState.Picked;
+					if (col.gameObject.tag != this.tag && col.gameObject.tag != "WARRIOR")
+					{
+						transform.SetParent (col.gameObject.transform);
+						transform.localPosition = new Vector3 (0, 2f, 0);
+						_currentState = EBonusState.Picked;
+						CrateBeingPicked ();
+					}
+
 					break;
 				}
 			case EBonusState.Picked:
@@ -52,7 +68,6 @@ namespace Core.Interactivity
 			}
 
 		}
-
 	}
 
 }

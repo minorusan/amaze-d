@@ -15,6 +15,7 @@ namespace Core.Bioms
 		{
 			_algorithm = new DiamondSquareTerrain ();
 			base.Start ();
+			BiomType = EBiomType.Fel;
 		}
 
 
