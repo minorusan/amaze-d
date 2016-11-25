@@ -8,33 +8,37 @@ using Core.Bioms;
 
 namespace Core.Gameplay
 {
-	public enum EReferenceType
-	{
-		None,
-		Slave
-	}
+    public enum EReferenceType
+    {
+        None,
+        Slave
+    }
 
-	public class ReferenceStorage
-	{
-		private Dictionary <EBiomType, HashSet<SlaveBrains>> _registeredSlaves;
+    public class ReferenceStorage
+    {
+        private Dictionary <EBiomType, HashSet<SlaveBrains>> _registeredSlaves;
 
-		public ReferenceStorage ()
-		{
-			_registeredSlaves = new Dictionary<EBiomType, HashSet<SlaveBrains>> ();
-			_registeredSlaves.Add (EBiomType.Fel, new HashSet<SlaveBrains> ());
-			_registeredSlaves.Add (EBiomType.Storm, new HashSet<SlaveBrains> ());
-		}
+        public ReferenceStorage()
+        {
+            _registeredSlaves = new Dictionary<EBiomType, HashSet<SlaveBrains>>();
+            _registeredSlaves.Add(EBiomType.Fel, new HashSet<SlaveBrains>());
+            _registeredSlaves.Add(EBiomType.Storm, new HashSet<SlaveBrains>());
+        }
 
-		public void RegisterSlave (SlaveBrains slave, EBiomType owner)
-		{
-			_registeredSlaves [owner].Add (slave);
-		}
+        public void RegisterSlave(SlaveBrains slave, EBiomType owner)
+        {
+            _registeredSlaves[owner].Add(slave);
+        }
 
-		public SlaveBrains[] GetSlavesOfBiome (EBiomType owner)
-		{
-			return _registeredSlaves [owner].ToArray ();
-		}
+        public void UnregisterSlave(SlaveBrains slave, EBiomType owner)
+        {
+            _registeredSlaves[owner].Remove(slave);
+        }
 
-	}
+        public SlaveBrains[] GetSlavesOfBiome(EBiomType owner)
+        {
+            return _registeredSlaves[owner].ToArray();
+        }
+    }
 }
 

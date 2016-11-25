@@ -3,46 +3,62 @@ using System.Collections;
 using Utils;
 using Core.Map;
 using Core.Gameplay;
+using Core.Bioms;
+using UnityEngine.SceneManagement;
 
 
 namespace Gameplay
 {
-	public class Game : MonoSingleton<Game>
-	{
-		private Session _currentSession;
+    public class Game : MonoSingleton<Game>
+    {
+        private Session _currentSession;
 
-		public ReferenceStorage ReferenceStorage {
-			get
-			{
-				return _currentSession.References;
-			}
-		}
+        public BiomBase[] bioms;
+        public GameObject WinPopup;
 
-		public Session CurrentSession {
-			get
-			{
-				return _currentSession;
-			}
-		}
+        public ReferenceStorage ReferenceStorage
+        {
+            get
+            {
+                return _currentSession.References;
+            }
+        }
 
-		public MapGenerator CurrentMap {
-			get
-			{
-				return _currentSession.CurrentMap;
-			}
-		}
+        public Session CurrentSession
+        {
+            get
+            {
+                return _currentSession;
+            }
+        }
 
-		// Use this for initialization
-		void Start ()
-		{
-			_currentSession = new Session ();
-		}
+        public MapGenerator CurrentMap
+        {
+            get
+            {
+                return _currentSession.CurrentMap;
+            }
+        }
 
-		// Update is called once per frame
-		void Update ()
-		{
+        void Start()
+        {
+            _currentSession = new Session();
+            Time.timeScale = 1;
+        }
 
-		}
-	}
+        void Update()
+        {
+            if (bioms[0].BiomPower < 0 || bioms[1].BiomPower < 0)
+            {
+                Time.timeScale = 0.001f;
+                WinPopup.SetActive(true);
+            }
+        }
+
+        public void Restart()
+        {
+            SceneManager.LoadSceneAsync(0);
+        }
+    }
 }
 

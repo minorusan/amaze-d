@@ -34,24 +34,12 @@ namespace Core.Interactivity.Movement
             {
                 if (value != null)
                 {
-                    if (_myPosition != null)
-                    {
-                        _myPosition.CurrentCellType = ECellType.Walkable;
-                        for (int i = 0; i < Game.Instance.CurrentMap.CurrentMap.Count; i++)
-                        {
-                            if (Game.Instance.CurrentMap.CurrentMap[i].CurrentCellType == ECellType.Target)
-                            {
-                                Game.Instance.CurrentMap.CurrentMap[i].CurrentCellType = ECellType.Walkable;
-                            }
-                        }
-                    }
                     _myPosition = value;
                     value.CurrentCellType = ECellType.Player;
                     if (PlayerPositionedChanged != null)
                     {
                         PlayerPositionedChanged();
                     }
-
                 }
             }
         }

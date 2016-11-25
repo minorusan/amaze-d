@@ -2,72 +2,83 @@
 using System.Collections;
 using Core.Bioms;
 using System;
+using Core.Interactivity.AI.Brains;
 
 
 namespace Core.Interactivity
 {
-	public enum EBonusState
-	{
-		Idle,
-		Picked
-	}
+    public enum EBonusState
+    {
+        Idle,
+        Picked
+    }
 
+    public class BasicBonus : MonoBehaviour
+    {
+        private EBonusState _currentState;
+        private Transform _rootTransform;
 
-	public class BasicBonus : MonoBehaviour
-	{
-		private EBonusState _currentState;
+        public int BonusValue = 20;
 
-		public static event Action CrateBeingPicked;
+        public static event EventHandler CrateBeingPicked;
 
-		public EBonusState CurrentState {
-			get
-			{
-				return _currentState;
-			}
-		}
-		// Use this for initialization
-		void Start ()
-		{
-			_currentState = EBonusState.Idle;
-		}
+        public EBonusState CurrentState
+        {
+            get
+            {
+                return _currentState;
+            }
+        }
 
-		// Update is called once per frame
-		void Update ()
-		{
+        #region Monobehaviour
 
-		}
+        private void Start()
+        {
+            _currentState = EBonusState.Idle;
+            _rootTransform = transform.parent;
+        }
 
-		private void OnTriggerEnter (Collider col)
-		{
-			switch (_currentState)
-			{
-			case EBonusState.Idle:
-				{
-					if (col.gameObject.tag != this.tag && col.gameObject.tag != "WARRIOR")
-					{
-						transform.SetParent (col.gameObject.transform);
-						transform.localPosition = new Vector3 (0, 2f, 0);
-						_currentState = EBonusState.Picked;
-						CrateBeingPicked ();
-					}
+        private void OnTriggerEnter(Collider col)
+        {
+            switch (_currentState)
+            {
+                case EBonusState.Idle:
+                    {
+                        var brains = col.gameObject.GetComponent<SlaveBrains>();
+                        if (brains != null && brains.CratePickedUp == false)
+                        {
+                            transform.SetParent(col.gameObject.transform);
+                            transform.localPosition = new Vector3(0, 3f, 0);
+                            CrateBeingPicked(this, EventArgs.Empty);
+                        }
 
-					break;
-				}
-			case EBonusState.Picked:
-				{
-					if (col.gameObject.layer == 9)
-					{
-						col.transform.parent.gameObject.GetComponentInParent <BiomBase> ().BiomPower += 10;
-						gameObject.SetActive (false);
-					}
+                        break;
+                    }
+                case EBonusState.Picked:
+                    {
+                        if (col.gameObject.layer == 9)
+                        {
+                            col.transform.parent.gameObject.GetComponentInParent <BiomBase>().BiomPower += BonusValue;
+                            transform.SetParent(_rootTransform); 
+                            gameObject.SetActive(false);
+                        }
 
-					break;
-				}
-			default:
-				break;
-			}
+                        break;
+                    }
+                default:
+                    break;
+            }
+        }
 
-		}
-	}
+        #endregion
 
+        public void SetPicked(bool picked)
+        {
+            _currentState = picked ? EBonusState.Picked : EBonusState.Idle;
+            if (!picked)
+            {
+                transform.SetParent(_rootTransform);  
+            }
+        }
+    }
 }

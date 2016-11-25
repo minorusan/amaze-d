@@ -25,6 +25,7 @@ namespace Utils
                     item.CurrentCellType = Core.Map.ECellType.Blocked;
                 }
             }
+            transform.localScale *= 0.8f;
         }
 
     }

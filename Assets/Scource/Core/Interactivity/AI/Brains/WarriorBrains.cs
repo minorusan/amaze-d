@@ -8,44 +8,64 @@ using UnityEngine;
 
 namespace Core.Interactivity.AI.Brains
 {
-	public class WarriorBrains:ArtificialIntelligence
-	{
-		public EBiomType EnemyBiome;
-		public SlaveBrains _target;
+    public class WarriorBrains:ArtificialIntelligence
+    {
+        private SlaveBrains _target;
 
-		public void Attack ()
-		{
-			if (_target != null && Vector3.Distance (_target.MovableObject.MyPosition.Position, transform.position) < 2f)
-			{
-				MovableObject.SelfAnimator.SetTrigger ("Attack");
-			}
+        public float Damage = 5;
+        public EBiomType EnemyBiome;
+        public GameObject FirstTarget;
 
-		}
+        #region Monobehavior
 
-		protected override void Start ()
-		{
-			base.Start ();
+        private void LateUpdate()
+        {
+            Attack();
+        }
 
-			_availiableStates.Add (EAIState.DetectSlave, new AIStateDetectSlave (this));
+        #endregion
 
-			_currentState = _availiableStates [EAIState.DetectSlave];
-			_currentState.OnEnter ();
-		}
+        #region WarriorBrains
 
-		private void Update ()
-		{
-			Attack ();
-		}
+        public void SetTarget(ArtificialIntelligence target)
+        {
+            _target = (SlaveBrains)target;
+        }
 
-		public void Punch ()
-		{
-			_target.Health.CurrentHealthAmount -= 10;
-			if (_target.Health.CurrentHealthAmount <= 0)
-			{
-				transform.localScale *= 1.1f;
-				UnityEngine.Debug.Log ("KILL");
-			}
-		}
-	}
+        public void Attack()
+        {
+            if (_target != null && _target.isActiveAndEnabled && Vector3.Distance(_target.MovableObject.MyPosition.Position, transform.position) < 2f)
+            {
+                _movableObject.SelfAnimator.SetTrigger("Attack");
+            }
+        }
+
+        public void Punch()
+        {
+            if (_target != null)
+            {
+                _target.Health.CurrentHealthAmount -= (int)Damage;
+                if (_target.Health.CurrentHealthAmount < 0)
+                {
+                    transform.localScale += transform.localScale * 0.1f;
+                    Damage += 0.2f;
+                    _target = null;
+                }
+            }
+        }
+
+        #endregion
+
+        #region ArtificialIntelligence
+
+        protected override void InitStates()
+        {
+            _availiableStates.Add(EAIState.DetectSlave, new AIStateDetectSlave(this));
+            _availiableStates.Add(EAIState.Wandering, new AIStateWandering(this));
+            BaseState = EAIState.DetectSlave;
+        }
+
+        #endregion
+    }
 }
 

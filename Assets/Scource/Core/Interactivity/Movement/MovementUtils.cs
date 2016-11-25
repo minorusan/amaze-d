@@ -7,65 +7,69 @@ using Core.Bioms;
 
 namespace Core.Interactivity.Movement
 {
-	public class Node
-	{
-		public int GCost;
-		public int HCost;
-		public bool IsIgnored = false;
-		public bool IsPositionDirty = false;
+    public class Node
+    {
+        public int GCost;
+        public int HCost;
+        public bool IsIgnored = false;
+        public bool IsPositionDirty = false;
 
-		public EBiomType BiomOwner = EBiomType.None;
+        public EBiomType BiomOwner = EBiomType.None;
 
-		public int FCost {
-			get
-			{
-				return GCost + HCost;
-			}
-		}
+        public int FCost
+        {
+            get
+            {
+                return GCost + HCost;
+            }
+        }
 
+        public Node Left;
+        public Node Right;
+        public Node Parent;
+        public int Data;
 
+        public ECellType CurrentCellType;
+        public Vector3 Position;
+        public IJ GridPosition;
+    }
 
-		public Node Parent;
+    public enum EMovableObjectState
+    {
+        Walking,
+        Standing
+    }
 
-		public ECellType CurrentCellType;
-		public Vector3 Position;
-		public IJ GridPosition;
-	}
+    public class Path
+    {
+        public bool Empty
+        {
+            get
+            {
+                return _nodes.Count <= 0;
+            }
 
-	public enum EMovableObjectState
-	{
-		Walking,
-		Standing
-	}
+        }
 
-	public class Path
-	{
-		public bool Empty {
-			get
-			{
-				return _nodes.Count <= 0;
-			}
+        public Path()
+        {
+            _nodes = new List<Node>();
+        }
 
-		}
+        private readonly List<Node> _nodes;
 
-		public Path ()
-		{
-			_nodes = new List<Node> ();
-		}
+        public List<Node> Nodes
+        {
+            get
+            {
+                return _nodes;
+            }
+        }
 
-		private readonly List<Node> _nodes;
-
-		public List<Node> Nodes {
-			get
-			{
-				return _nodes;
-			}
-		}
-
-		public Path (List<Node> nodes)
-		{
-			_nodes = nodes;
-		}
-	}
+        public Path(List<Node> nodes)
+        {
+            _nodes = nodes;
+        }
+    }
 }
 

@@ -22,8 +22,7 @@ namespace Core.Map
         Walkable = 0,
         Blocked = 1,
         Busy,
-        Target,
-        Player,
+        Player
     }
 
     #if UNITY_EDITOR
@@ -38,11 +37,6 @@ namespace Core.Map
             if (GUILayout.Button("Generate map"))
             {
                 mapGenerator.InstantiateCells();
-            }
-
-            if (GUILayout.Button("Generate obstacles"))
-            {
-                mapGenerator.GenerateObstacles();
             }
         }
     }

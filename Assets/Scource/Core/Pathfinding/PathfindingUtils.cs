@@ -5,20 +5,22 @@ using Core.Map;
 
 namespace Core.Pathfinding
 {
-	internal interface IPathFinder
-	{
-		EPathfindingAlgorithm Algorithm {
-			get;
-		}
+    internal interface IPathFinder
+    {
+        EPathfindingAlgorithm Algorithm
+        {
+            get;
+        }
 
-		Path FindPathToDestination (IJ currentNodeIndex, IJ targetNodeIndex);
-	}
+        Path FindPathToDestination(IJ currentNodeIndex, IJ targetNodeIndex);
+    }
 
-	public enum EPathfindingAlgorithm
-	{
-		Deikstra,
-		AStar,
-		DepthFirstSearch
-	}
+    public enum EPathfindingAlgorithm
+    {
+        Deikstra,
+        AStar,
+        DepthFirstSearch,
+        BreadthFirst
+    }
 }
 

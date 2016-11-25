@@ -34,16 +34,18 @@ namespace Core.Pathfinding.Algorithms
             Node startNode = map[currentNodeIndex.I, currentNodeIndex.J];
             Node targetNode = map[targetNodeIndex.I, targetNodeIndex.J];
 
-
-
             List<Node> openSet = new List<Node>();
             HashSet<Node> closedSet = new HashSet<Node>();
             var currentMap = Game.Instance.CurrentMap;
 
             openSet.Add(startNode);
-
+            var iterator = 0;
             while (openSet.Count > 0)
             {
+                if (iterator > 300)
+                {
+                    return FindPathToDestination(currentNodeIndex, closedSet.Last().GridPosition);
+                }
                 Node node = openSet[0];
                 for (int i = 1; i < openSet.Count; i++)
                 {
@@ -59,9 +61,10 @@ namespace Core.Pathfinding.Algorithms
 
                 if (node == targetNode)
                 {
-                    return RetracePath(startNode, targetNode);
+                    var t = RetracePath(startNode, targetNode);
+                    return t;
                 }
-
+               
                 foreach (Node neighbour in currentMap.GetNeighbours(node, Vector2.one))
                 {
                     var ignored = _ignoredNodeTypes.Any(p => p == neighbour.CurrentCellType);
@@ -76,12 +79,13 @@ namespace Core.Pathfinding.Algorithms
                         neighbour.GCost = newCostToNeighbour;
                         neighbour.HCost = currentMap.GetDistance(neighbour, targetNode);
                         neighbour.Parent = node;
-
+                        iterator++;
                         if (!openSet.Contains(neighbour))
                             openSet.Add(neighbour);
                     }
                 }
             }
+           
             return new Path();
         }
 
@@ -91,16 +95,16 @@ namespace Core.Pathfinding.Algorithms
         {
             List<Node> path = new List<Node>();
             Node currentNode = endNode;
-
+              
             while (currentNode != startNode)
             {
                 path.Add(currentNode);
                 currentNode = currentNode.Parent;
+              
             }
             path.Reverse();
 
             return new Path(path);
-
         }
     }
 }
