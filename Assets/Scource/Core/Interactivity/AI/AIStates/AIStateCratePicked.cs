@@ -40,22 +40,27 @@ namespace Core.Interactivity.AI.AIStates
                 return;
             }
                 
-            FindNewpath();
+            if (_ownerBrain.MovableObject.CurrentPath.Empty)
+            {
+                FindNewpath();
+            }
         }
 
         private void FindNewpath()
         {
             var biomNode = Game.Instance.CurrentMap.GetWalkableBiomNode(_ownerBrain.OwnerBiome);
-
-            var walkableNighbour = Game.Instance.CurrentMap.GetWalkableNeighbours(biomNode)[0];
-            if (walkableNighbour != null)
+            var t = Game.Instance.CurrentMap.GetWalkableNeighbours(biomNode);
+            if (t.Count > 0)
             {
-                _masterBrain.MovableObject.BeginMovementByPath(Pathfinder.FindPathToDestination(
-                        _masterBrain.MovableObject.MyPosition.GridPosition,
-                        walkableNighbour.GridPosition
-                    ));
+                var walkableNighbour = Game.Instance.CurrentMap.GetWalkableNeighbours(biomNode)[0];
+                if (walkableNighbour != null)
+                {
+                    _masterBrain.MovableObject.BeginMovementByPath(Pathfinder.FindPathToDestination(
+                            _masterBrain.MovableObject.MyPosition.GridPosition,
+                            walkableNighbour.GridPosition
+                        ));
+                }
             }
-
         }
     }
 }

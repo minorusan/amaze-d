@@ -25,6 +25,8 @@ namespace Core.Interactivity.AI
 
         #endregion
 
+        public bool AllowsUpdates = false;
+
         public MovableObject MovableObject
         {
             get
@@ -79,9 +81,8 @@ namespace Core.Interactivity.AI
 
         private void Update()
         {
-            if (_currentState == null)
+            if (_currentState == null || !AllowsUpdates)
             {
-                Debug.LogError(this.name + " has no active state.");
                 return;
             }
 

@@ -5,6 +5,7 @@ using Core.Interactivity.Movement;
 using Core.Pathfinding;
 using Core.Interactivity.AI.Brains;
 using UnityEngine.EventSystems;
+using System.Security.AccessControl;
 
 
 
@@ -83,8 +84,7 @@ namespace Core.Interactivity.AI.AIStates
                 var randomNeighbour = Game.Instance.CurrentMap.GetWalkableNeighbours(_targetSlave.MovableObject.MyPosition)[0];
                 var path = Pathfinder.FindPathToDestination(
                                _masterBrain.MovableObject.MyPosition.GridPosition,
-                               randomNeighbour.GridPosition
-                           );
+                               randomNeighbour.GridPosition);
 
                 _masterBrain.MovableObject.BeginMovementByPath(path);
             }

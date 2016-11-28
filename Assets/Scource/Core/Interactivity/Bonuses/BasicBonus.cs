@@ -3,6 +3,7 @@ using System.Collections;
 using Core.Bioms;
 using System;
 using Core.Interactivity.AI.Brains;
+using Core.Interactivity.AI;
 
 
 namespace Core.Interactivity
@@ -17,6 +18,7 @@ namespace Core.Interactivity
     {
         private EBonusState _currentState;
         private Transform _rootTransform;
+        private EBiomType targetOwner;
 
         public int BonusValue = 20;
 
@@ -45,6 +47,7 @@ namespace Core.Interactivity
                 case EBonusState.Idle:
                     {
                         var brains = col.gameObject.GetComponent<SlaveBrains>();
+                        targetOwner = brains.OwnerBiome;
                         if (brains != null && brains.CratePickedUp == false)
                         {
                             transform.SetParent(col.gameObject.transform);
@@ -58,9 +61,13 @@ namespace Core.Interactivity
                     {
                         if (col.gameObject.layer == 9)
                         {
-                            col.transform.parent.gameObject.GetComponentInParent <BiomBase>().BiomPower += BonusValue;
-                            transform.SetParent(_rootTransform); 
-                            gameObject.SetActive(false);
+                            var biom = col.transform.parent.gameObject.GetComponentInParent <BiomBase>();
+                            if (biom.BiomType == targetOwner)
+                            {
+                                biom.BiomPower += BonusValue;
+                                transform.SetParent(_rootTransform); 
+                                gameObject.SetActive(false);
+                            }
                         }
 
                         break;

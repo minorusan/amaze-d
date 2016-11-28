@@ -15,7 +15,7 @@ namespace Core.Interactivity.AI.AIStates
         private float _searchDistance;
 
 
-        public AIStateAlert(ArtificialIntelligence brains, float searchDistance)
+        public AIStateAlert(ArtificialIntelligence brains, float searchDistance = 40f)
             : base(brains)
         {
             _searchDistance = searchDistance;
@@ -44,7 +44,7 @@ namespace Core.Interactivity.AI.AIStates
             {
                 if (!PlayerIsVisible())
                 {
-                    if (_currentDestination == null || _currentDestination == _masterBrain.MovableObject.MyPosition)
+                    if (_masterBrain.MovableObject.ReachedDestination)
                     {
                         FindNewpath();
                     }	
@@ -54,12 +54,6 @@ namespace Core.Interactivity.AI.AIStates
                     _currentCondition = AIStateCondition.Done;
                     _pendingState = EAIState.Attack;
                 }
-
-            }
-            else
-            {
-                _currentCondition = AIStateCondition.Done;
-                _pendingState = EAIState.Wandering;
             }
         }
 
@@ -84,7 +78,6 @@ namespace Core.Interactivity.AI.AIStates
         {
             var playerPosition = Game.Instance.CurrentSession.Player.MyPosition.Position;
             var myPosition = _masterBrain.MovableObject.MyPosition.Position;
-            var sub = playerPosition - myPosition;
 
             return Vector3.Distance(playerPosition, myPosition) <= _searchDistance;
         }

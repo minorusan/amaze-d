@@ -14,7 +14,6 @@ namespace Core.Interactivity.AI.Brains
 
         public float Damage = 5;
         public EBiomType EnemyBiome;
-        public GameObject FirstTarget;
 
         #region Monobehavior
 

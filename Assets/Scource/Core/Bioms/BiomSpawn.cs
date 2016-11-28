@@ -2,32 +2,56 @@
 using System.Collections;
 using Gameplay;
 
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace Core.Bioms
 {
-    public enum BiomSpawnState
+    #if UNITY_EDITOR
+
+    [CustomEditor(typeof(BiomSpawn))]
+    [CanEditMultipleObjects]
+    public class BiomSpawnEditor:Editor
     {
-        Grows,
-        Exists,
-        Dies
+        public override void OnInspectorGUI()
+        {
+            var scriptTarget = target as BiomSpawn;
+            scriptTarget.Infinite = EditorGUILayout.Toggle("Infinite", scriptTarget.Infinite);
+            if (!scriptTarget.Infinite)
+            {
+                scriptTarget.LifeSpan = EditorGUILayout.IntField("Life Span", scriptTarget.LifeSpan);
+            }
+            scriptTarget.RequiredPower = EditorGUILayout.IntField("Required Power", scriptTarget.RequiredPower);
+            scriptTarget.RandomizeLocation = EditorGUILayout.Toggle("Randomized location", scriptTarget.RandomizeLocation);
+        }
     }
+
+    #endif
 
     public class BiomSpawn:MonoBehaviour
     {
-        public Vector3 InitialScale;
+        enum BiomSpawnState
+        {
+            Grows,
+            Exists,
+            Dies
+        }
+
+        #region PRIVATE
+
+        private Vector3 InitialScale;
         private BiomSpawnState _currentState;
         private float _remainingLifeTime;
 
-        [Tooltip("Stop spawining after that amount of biom power")]
+        #endregion
 
-        public bool Disposable;
         public bool Infinite;
-
-        public bool Grows;
         public bool RandomizeLocation;
         public int RequiredPower = 3;
-        public int LimitPower = 80;
-        public float LifeSpan = 30;
+        public int LifeSpan = 30;
+
+        #region Monobehaviour
 
         private void Awake()
         {
@@ -40,7 +64,6 @@ namespace Core.Bioms
 
             _currentState = BiomSpawnState.Grows;
             transform.localScale = Vector3.zero;
-           
         }
 
         private void Update()
@@ -67,7 +90,9 @@ namespace Core.Bioms
             }
         }
 
-        #region PRIVATE
+        #endregion
+
+        #region INTERNAL METHODS
 
         private void Dies()
         {
@@ -75,11 +100,6 @@ namespace Core.Bioms
             if (transform.localScale.x <= 0.1f)
             {
                 gameObject.SetActive(false);
-                if (Disposable)
-                {
-                    Destroy(this.gameObject);
-                }
-
             }
         }
 
@@ -116,8 +136,5 @@ namespace Core.Bioms
         }
 
         #endregion
-
     }
-
-
 }

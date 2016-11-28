@@ -6,6 +6,7 @@ using System;
 public class Health : MonoBehaviour
 {
     public Image HealthBar;
+    public bool LooksOnPlayer = true;
     public float CurrentHealthAmount = 100;
     public GameObject DeathEffect;
     bool activatedDeathEffect = false;
@@ -25,10 +26,15 @@ public class Health : MonoBehaviour
         if (CurrentHealthAmount > 0)
         {
             HealthBar.fillAmount = CurrentHealthAmount / 100;
-            HealthBar.transform.parent.LookAt(Camera.main.transform);
+            if (LooksOnPlayer)
+            {
+                HealthBar.transform.parent.LookAt(Camera.main.transform);
+            }
+
         }
         else
         {
+            HealthBar.fillAmount = 0;
             if (OnWillDie != null)
             {
                 OnWillDie();

@@ -18,7 +18,7 @@ namespace Core.Interactivity.AI.AIStates
         private int _leaveDistance;
 
 
-        public AIStateAttack(ArtificialIntelligence brains, int leaveDistance)
+        public AIStateAttack(ArtificialIntelligence brains, int leaveDistance = 60)
             : base(brains)
         {
             _leaveDistance = leaveDistance;
@@ -49,7 +49,7 @@ namespace Core.Interactivity.AI.AIStates
             else
             {
                 _currentCondition = AIStateCondition.Done;
-                _pendingState = EAIState.Wandering;
+                _pendingState = EAIState.Alert;
             }
         }
 
@@ -67,39 +67,15 @@ namespace Core.Interactivity.AI.AIStates
 
         private void GoGetHim()
         {
-            if (_masterBrain.MovableObject.ReachedDestination || IsDestinationCellBusy())
+            var distance = Vector3.Distance(_player.transform.position, _masterBrain.transform.position);
+            if (_masterBrain.MovableObject.ReachedDestination && distance < 2f)
             {
-                var notOnNeighbourPlayerCell = Game.Instance.CurrentMap.GetNeighbours(_player.MyPosition, Vector2.one).All(p => p != _masterBrain.MovableObject.MyPosition
-                                   );
-
-                if (notOnNeighbourPlayerCell)
-                {
-                    MoveToPlayer();
-                }
-                else
-                {
-                    LookOnPlayerAndAttack();
-                }
-
-            }
-            else if (_attacks)
-            {
-                _attacks = false;
-                _masterBrain.MovableObject.SelfAnimator.SetBool("Attack", false);
+                _masterBrain.transform.LookAt(_player.transform.position);
+                _masterBrain.MovableObject.SelfAnimator.SetTrigger("Attack");
+                _masterBrain.MovableObject.SelfAnimator.SetBool("Walk", true);
             }
         }
 
-       
-
-        private void LookOnPlayerAndAttack()
-        {
-            _masterBrain.MovableObject.transform.LookAt(_player.transform);
-            if (!_attacks)
-            {
-                _attacks = true;
-                _masterBrain.MovableObject.SelfAnimator.SetBool("Attack", true);
-            }
-        }
 
         private Node GetNearestAttackablePosition(List<Node> positions)
         {
@@ -119,7 +95,7 @@ namespace Core.Interactivity.AI.AIStates
 
         private bool IsPlayerReachable()
         {
-            return _masterBrain.MovableObject.CurrentPath.Nodes.Count < _leaveDistance;
+            return _player.isActiveAndEnabled;
         }
 
         private void FindNewpath()
@@ -136,8 +112,5 @@ namespace Core.Interactivity.AI.AIStates
         }
 
         #endregion
-
-      
     }
 }
-

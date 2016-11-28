@@ -78,7 +78,6 @@ namespace Core.Interactivity.Movement
         private void Update()
         {
            
-            SelfAnimator.SetFloat("Speed", MovementSpeed * 100);
             if (!_currentPath.Empty)
             {
                 TargetCell = _currentPath.Nodes.LastOrDefault().CurrentCellType;

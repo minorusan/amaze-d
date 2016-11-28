@@ -1,47 +1,51 @@
 ﻿using UnityEngine;
 using System;
 using System.Collections;
+using System.Linq;
+using Core.Bioms.BiomeComponents;
+using Core.Interactivity.AI.Brains;
+using System.Collections.Generic;
+using Gameplay;
 
 
 
 namespace Core.Bioms
 {
-    public class BiomBase : MonoBehaviour
+    public abstract class BiomBase : MonoBehaviour
     {
         #region PRIVATE
 
-        private float _timeToGrow;
-        protected BiomShaper _shaper;
+        //Backing fields & private
         private int _power = 1;
         private bool _canCollide = true;
+
+        //Components
+        private List<IBiomeComponent> _biomeComponents;
+        protected BiomShaper _shaper;
         private BiomCollisionDetector _collisionDetector;
         private BiomSlavesController _slavesController;
         private BiomWarriorsController _warriorsController;
-        public Material _material;
-
 
         #endregion
 
         [Header("Basic biome settings")]
-        public Transform bonusDeliveryPoint;
-
         public bool ControlledByPlayer;
 
-        public float ScaleCoeficient;
         public float Padding = 3.5f;
         public GameObject Plane;
         public GameObject Surface;
         public Collider SpawnArea;
 
-        public float GrowthTime = 3;
-        public float GrowthSpeed = 3;
+        public float GrowthRate = 3;
+        public float GrowthCoeficient = 3;
 
-        [Header("Biome-specific")]
-        public string BiomSpawnsTag;
-        public bool UsePerlinNoise;
-        public float[,] CurrentMap;
+        #region Properties
 
-        public EBiomType BiomType;
+        public EBiomType BiomType
+        {
+            get;
+            protected set;
+        }
 
         public int BiomPower
         {
@@ -64,90 +68,46 @@ namespace Core.Bioms
             }
         }
 
+        public float[,] CurrentMap
+        {
+            get;
+            protected set;
+        }
+
+        #endregion
+
         #region MONOBEHAVIOUR
 
         protected virtual void Awake()
-        {
-            _timeToGrow = GrowthTime;
+        {  
+            Init();
         }
 
         protected virtual void Start()
         {
-            InitShaper();
-
-            _slavesController = new BiomSlavesController(this);
-            _warriorsController = new BiomWarriorsController(this);
             _collisionDetector = GetComponentInChildren<BiomCollisionDetector>();
             _collisionDetector.CollidedWithBiome += OnCollidedWithBiome;
-            StartCoroutine(DefineGrowProgress());
-            StartCoroutine(UpdateShaper());
+            InvokeRepeating("IncreasePower", 0.0f, GrowthRate);
         }
 
-        void OnCollidedWithBiome(BiomBase collidedWith)
+        private void Update()
         {
-            if (_canCollide)
+            if (ControlledByPlayer && !Game.Instance.CurrentSession.Player.isActiveAndEnabled && BiomPower > 20)
             {
-                BiomPower += collidedWith.BiomPower > BiomPower ? -10 : 3;
-                _canCollide = false;
-                Invoke("EnableCollision", 2f);
-                Debug.Log(this.name + " lost " + 10 + " biome power.");
+                Game.Instance.CurrentSession.Player.gameObject.SetActive(true);
+                BiomPower -= 20;
+                Game.Instance.CurrentSession.Player.transform.position = new Vector3(transform.position.x, 10f, transform.position.z);
             }
-        }
 
-        void EnableCollision()
-        {
-            _canCollide = true;
-        }
-
-        protected virtual void PerformTerrainGeneration()
-        {
-        }
-
-        protected void Update()
-        {
-            if (!ControlledByPlayer)
+            for (int i = 0; i < _biomeComponents.Count; i++)
             {
-                _warriorsController.Spawn();
-                _slavesController.Spawn();
+                _biomeComponents[i].UpdateComponent();
             }
         }
 
         #endregion
 
-        private void InitShaper()
-        {
-            var shaperData = new BiomShaperData();
-            shaperData.GrowthSpeed = GrowthSpeed;
-            shaperData.Owner = this;
-            shaperData.Padding = Padding;
-            shaperData.Plane = Plane;
-
-            _shaper = new BiomShaper(shaperData);
-        }
-
-        public void UpdateBiomMap()
-        {
-            _shaper.UpdateMap();
-        }
-
-        private IEnumerator DefineGrowProgress()
-        {
-            while (true)
-            {
-                BiomPower++;
-
-                yield return new WaitForSeconds(GrowthTime);
-            }
-        }
-
-        private IEnumerator UpdateShaper()
-        {
-            while (true)
-            {
-                _shaper.UpdateShape();
-                yield return new WaitForFixedUpdate();
-            }
-        }
+        #region Public
 
         public void SpawnSlave()
         {
@@ -158,5 +118,72 @@ namespace Core.Bioms
         {
             _warriorsController.Spawn();
         }
+
+        #endregion
+
+        #region Init
+
+        private void Init()
+        {
+            InitComponents();
+            InitShaper();
+        }
+
+        private void InitShaper()
+        {
+            var shaperData = new BiomShaperData();
+            shaperData.GrowthSpeed = GrowthCoeficient;
+            shaperData.Owner = this;
+            shaperData.Padding = Padding;
+            shaperData.Plane = Plane;
+
+            _shaper = new BiomShaper(shaperData);
+            _biomeComponents.Add(_shaper);
+        }
+
+        private void InitComponents()
+        {
+            _biomeComponents = GetComponentsInChildren<IBiomeComponent>().ToList();
+            for (int i = 0; i < _biomeComponents.Count; i++)
+            {
+                _biomeComponents[i].InitComponent(this);
+            }
+            _slavesController = GetComponentInChildren<BiomSlavesController>();
+            _warriorsController = GetComponentInChildren<BiomWarriorsController>();
+        }
+
+        #endregion
+
+        #region Collision
+
+        private void OnCollidedWithBiome(BiomBase collidedWith)
+        {
+            if (_canCollide)
+            {
+                var powerGained = collidedWith.BiomPower > BiomPower ? -10 : 3;
+                BiomPower += powerGained;
+                _canCollide = false;
+                Invoke("EnableCollision", 1f);
+                Debug.Log(this.name + " gained " + powerGained + " biome power.");
+            }
+        }
+
+        private void EnableCollision()
+        {
+            _canCollide = true;
+        }
+
+        #endregion
+
+        #region Internal
+
+        protected abstract void PerformTerrainGeneration();
+
+        private void IncreasePower()
+        {
+            BiomPower++;
+        }
+
+        #endregion
     }
 }

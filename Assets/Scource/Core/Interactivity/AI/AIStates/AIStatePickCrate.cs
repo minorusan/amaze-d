@@ -54,10 +54,7 @@ namespace Core.Interactivity.AI.AIStates
                 return;
             }
 
-            if (_ownerBrain.MovableObject.CurrentPath.Empty)
-            {
-                FindNewpath();
-            }
+            FindNewpath();
         }
 
         private void FindNewpath()

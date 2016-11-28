@@ -311,6 +311,7 @@ namespace Core.Map
 
         public Node[] GetNeighbours(Node node, Vector2 inRange)
         {
+
             int iterator = 0;
 
             for (int x = (int)-inRange.x; x <= inRange.x; x++)
