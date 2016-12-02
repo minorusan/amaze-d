@@ -25,7 +25,7 @@ namespace Core.Pathfinding.Algorithms
 
         public AStar()
         {
-            _ignoredNodeTypes = new List<ECellType>{ ECellType.Blocked, ECellType.Busy };
+            _ignoredNodeTypes = new List<ECellType>{ ECellType.Blocked };
         }
 
         public Path FindPathToDestination(IJ currentNodeIndex, IJ targetNodeIndex)
@@ -42,7 +42,7 @@ namespace Core.Pathfinding.Algorithms
             var iterator = 0;
             while (openSet.Count > 0)
             {
-                if (iterator > 300)
+                if (iterator > 100)
                 {
                     return FindPathToDestination(currentNodeIndex, closedSet.Last().GridPosition);
                 }

@@ -48,7 +48,7 @@ TextureImporter:
   textureType: -1
   buildTargetSettings:
   - buildTarget: Android
-    maxTextureSize: 256
+    maxTextureSize: 64
     textureFormat: -1
     compressionQuality: 50
     allowsAlphaSplitting: 0

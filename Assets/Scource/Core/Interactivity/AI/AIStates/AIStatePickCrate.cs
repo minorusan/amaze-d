@@ -61,7 +61,7 @@ namespace Core.Interactivity.AI.AIStates
         {
             var crateNode = Game.Instance.CurrentSession.BonusManager.GetClosestCratePosition(_masterBrain.MovableObject.MyPosition.Position);
 
-            if (crateNode != null)
+            if (crateNode != null && (crateNode != _currentTargetNode || _ownerBrain.MovableObject.CurrentPath.Empty))
             {
                 _currentTargetNode = crateNode;
                 _masterBrain.MovableObject.BeginMovementByPath(Pathfinder.FindPathToDestination(
