@@ -124,7 +124,7 @@ public class CameraControllerWOW : MonoBehaviour
             }
      
                 // otherwise, ease behind the target if any of the directional keys are pressed
-            else if (Input.GetAxis("Vertical") != 0 || Input.GetAxis("Horizontal") != 0 || rotateBehind || mouseSideButton)
+            else if (CnInputManager.GetAxis("Vertical") != 0 || CnInputManager.GetAxis("Horizontal") != 0 || rotateBehind || mouseSideButton)
             {
                 RotateBehindTarget();
             }
@@ -187,7 +187,6 @@ public class CameraControllerWOW : MonoBehaviour
         }
         else
             rotateBehind = true;
-         
     }
 
          
