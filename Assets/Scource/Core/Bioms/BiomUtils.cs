@@ -18,7 +18,5 @@ namespace Core.Bioms
 		public float Padding;
 		public float GrowthSpeed;
 	}
-
-
 }
 

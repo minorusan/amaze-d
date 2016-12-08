@@ -9,56 +9,62 @@ using UnityEngine.SceneManagement;
 
 namespace Gameplay
 {
-    public class Game : MonoSingleton<Game>
-    {
-        private Session _currentSession;
+	public class Game : MonoSingleton<Game>
+	{
+		private Session _currentSession;
 
-        public BiomBase[] bioms;
-        public GameObject WinPopup;
+		public BiomBase[] bioms;
+		public GameObject WinPopup;
 
-        public ReferenceStorage ReferenceStorage
-        {
-            get
-            {
-                return _currentSession.References;
-            }
-        }
+		public ReferenceStorage ReferenceStorage {
+			get
+			{
+				return _currentSession.References;
+			}
+		}
 
-        public Session CurrentSession
-        {
-            get
-            {
-                return _currentSession;
-            }
-        }
+		public Session CurrentSession {
+			get
+			{
+				return _currentSession;
+			}
+		}
 
-        public MapGenerator CurrentMap
-        {
-            get
-            {
-                return _currentSession.CurrentMap;
-            }
-        }
+		public MapGenerator CurrentMap {
+			get
+			{
+				return _currentSession.CurrentMap;
+			}
+		}
 
-        void Start()
-        {
-            _currentSession = new Session();
-            Time.timeScale = 1;
-        }
+		void Start ()
+		{
+			_currentSession = new Session ();
+			Time.timeScale = 1;
+		}
 
-        void Update()
-        {
-            if (bioms[0].BiomPower < 0 || bioms[1].BiomPower < 0)
-            {
-                Time.timeScale = 0.001f;
-                WinPopup.SetActive(true);
-            }
-        }
+		void Update ()
+		{
+			if (bioms.Length > 1)
+			{
+				if (bioms [0].BiomPower < 0 || bioms [1].BiomPower < 0)
+				{
+					Time.timeScale = 0.001f;
+					WinPopup.SetActive (true);
+				}
+			}
 
-        public void Restart()
-        {
-            SceneManager.LoadSceneAsync(0);
-        }
-    }
+		}
+
+		public void Back ()
+		{
+			SceneManager.LoadSceneAsync ("MainMenu");
+		}
+
+		public void Restart ()
+		{
+			SceneManager.LoadSceneAsync (SceneManager.GetActiveScene ().name);
+		}
+	}
 }
 

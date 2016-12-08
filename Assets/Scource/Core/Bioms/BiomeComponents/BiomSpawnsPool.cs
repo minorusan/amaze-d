@@ -8,62 +8,67 @@ using Core.Bioms.BiomeComponents;
 
 namespace Core.Bioms
 {
-    public class BiomSpawnsPool : MonoBehaviour, IBiomeComponent
-    {
-        #region PRIVATE
+	public class BiomSpawnsPool : MonoBehaviour, IBiomeComponent
+	{
+		#region PRIVATE
 
-        private BiomSpawn[] _biomSpawns;
-        private BiomBase _owner;
+		private BiomSpawn[] _biomSpawns;
+		private BiomBase _owner;
 
-        #endregion
+		#endregion
 
-        #region IBiomeComponent
+		#region IBiomeComponent
 
-        public void InitComponent(BiomBase owner)
-        {
-            _owner = owner;
-            GetSpawns();
-        }
+		public void SetActive (bool active)
+		{
+		}
 
-        public void UpdateComponent()
-        {
-            if (_biomSpawns != null && _biomSpawns.Length > 0)
-            {
-                for (int i = 0; i < _biomSpawns.Length; i++)
-                {
-                    if (_biomSpawns[i] != null && IsPowerConditionSatisfied(_biomSpawns[i]) && !_biomSpawns[i].isActiveAndEnabled)
-                    {
-                        _biomSpawns[i].gameObject.SetActive(true);
-                        _biomSpawns[i].transform.position = _biomSpawns[i].RandomizeLocation ? _owner.Shaper.GetRandomPosition(_owner.SpawnArea) : _biomSpawns[i].transform.position; 
-                    }
 
-                    if (_biomSpawns[i] != null && !IsPowerConditionSatisfied(_biomSpawns[i]))
-                    {
-                        _biomSpawns[i].DeactivateSpawn();
-                    }
-                }
-            }
-        }
+		public void InitComponent (BiomBase owner)
+		{
+			_owner = owner;
+			GetSpawns ();
+		}
 
-        #endregion
+		public void UpdateComponent ()
+		{
+			if (_biomSpawns != null && _biomSpawns.Length > 0)
+			{
+				for (int i = 0; i < _biomSpawns.Length; i++)
+				{
+					if (_biomSpawns [i] != null && IsPowerConditionSatisfied (_biomSpawns [i]) && !_biomSpawns [i].isActiveAndEnabled)
+					{
+						_biomSpawns [i].gameObject.SetActive (true);
+						_biomSpawns [i].transform.position = _biomSpawns [i].RandomizeLocation ? _owner.Shaper.GetRandomPosition (_owner.SpawnArea) : _biomSpawns [i].transform.position; 
+					}
 
-        #region Internal
+					if (_biomSpawns [i] != null && !IsPowerConditionSatisfied (_biomSpawns [i]))
+					{
+						_biomSpawns [i].DeactivateSpawn ();
+					}
+				}
+			}
+		}
 
-        private bool IsPowerConditionSatisfied(BiomSpawn _biomsSpawn)
-        {
-            return _biomsSpawn.RequiredPower <= _owner.BiomPower;
-        }
+		#endregion
 
-        private void GetSpawns()
-        {
-            _biomSpawns = GetComponentsInChildren<BiomSpawn>();
-            for (int i = 0; i < _biomSpawns.Length; i++)
-            {
-                _biomSpawns[i].gameObject.SetActive(false);
-            }
-        }
+		#region Internal
 
-        #endregion
-    }
+		private bool IsPowerConditionSatisfied (BiomSpawn _biomsSpawn)
+		{
+			return _biomsSpawn.RequiredPower <= _owner.BiomPower;
+		}
+
+		private void GetSpawns ()
+		{
+			_biomSpawns = GetComponentsInChildren<BiomSpawn> ();
+			for (int i = 0; i < _biomSpawns.Length; i++)
+			{
+				_biomSpawns [i].gameObject.SetActive (false);
+			}
+		}
+
+		#endregion
+	}
 }
 

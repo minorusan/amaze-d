@@ -8,63 +8,64 @@ using UnityEngine;
 
 namespace Core.Interactivity.AI.Brains
 {
-    public class WarriorBrains:ArtificialIntelligence
-    {
-        private SlaveBrains _target;
+	public class WarriorBrains:ArtificialIntelligence
+	{
+		private SlaveBrains _target;
 
-        public float Damage = 5;
-        public EBiomType EnemyBiome;
+		public float Damage = 5;
+		public EBiomType EnemyBiome;
 
-        #region Monobehavior
+		#region Monobehavior
 
-        private void LateUpdate()
-        {
-            Attack();
-        }
+		private void LateUpdate ()
+		{
+			Attack ();
+		}
 
-        #endregion
+		#endregion
 
-        #region WarriorBrains
+		#region WarriorBrains
 
-        public void SetTarget(ArtificialIntelligence target)
-        {
-            _target = (SlaveBrains)target;
-        }
+		public void SetTarget (ArtificialIntelligence target)
+		{
+			_target = (SlaveBrains)target;
+		}
 
-        public void Attack()
-        {
-            if (_target != null && _target.isActiveAndEnabled && Vector3.Distance(_target.MovableObject.MyPosition.Position, transform.position) < 2f)
-            {
-                _movableObject.SelfAnimator.SetTrigger("Attack");
-            }
-        }
+		public void Attack ()
+		{
+			if (_target != null && _target.isActiveAndEnabled && Vector3.Distance (_target.MovableObject.MyPosition.Position, transform.position) < 2f)
+			{
+				_movableObject.SelfAnimator.SetTrigger ("Attack");
+			}
+		}
 
-        public void Punch()
-        {
-            if (_target != null)
-            {
-                _target.Health.CurrentHealthAmount -= (int)Damage;
-                if (_target.Health.CurrentHealthAmount < 0)
-                {
-                    transform.localScale += transform.localScale * 0.1f;
-                    Damage += 0.2f;
-                    _target = null;
-                }
-            }
-        }
+		public void Punch ()
+		{
+			if (_target != null)
+			{
+				_target.Health.CurrentHealthAmount -= (int)Damage;
+				if (_target.Health.CurrentHealthAmount < 0)
+				{
+					Damage += 1;
+					transform.localScale *= 1.2f;
 
-        #endregion
+					_target = null;
+				}
+			}
+		}
 
-        #region ArtificialIntelligence
+		#endregion
 
-        protected override void InitStates()
-        {
-            _availiableStates.Add(EAIState.DetectSlave, new AIStateDetectSlave(this));
-            _availiableStates.Add(EAIState.Wandering, new AIStateWandering(this));
-            BaseState = EAIState.DetectSlave;
-        }
+		#region ArtificialIntelligence
 
-        #endregion
-    }
+		protected override void InitStates ()
+		{
+			_availiableStates.Add (EAIState.DetectSlave, new AIStateDetectSlave (this));
+			_availiableStates.Add (EAIState.Wandering, new AIStateWandering (this));
+			BaseState = EAIState.DetectSlave;
+		}
+
+		#endregion
+	}
 }
 
